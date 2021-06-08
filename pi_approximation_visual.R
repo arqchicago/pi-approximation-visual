@@ -1,6 +1,7 @@
 require(plotrix)
 require(grid)
 require(ggplot2)
+library(gganimate)
 
 #=========================================================================================================
 # read data
@@ -10,7 +11,7 @@ setwd('C:/Users/Ahmad/Desktop/Ahmad/python/pi_approximation_visual')
 pi_data <- read.csv('./data/data.csv', row.names=1, header=TRUE)
 pi_data['pi_appx'][is.na(pi_data['pi_appx'])] <- 0
 pi_data$iter <- rownames(pi_data)
-pi_data$iter <- as.numeric(pi_data$iter)
+pi_data$iter <- as.integer(as.numeric(pi_data$iter))
 pi_data
 
 #=========================================================================================================
@@ -29,6 +30,18 @@ circle_data <- getCircle(diameter=2)
 ggplot(circle_data, aes(x, y)) + geom_path(size=1, col='maroon') +
   geom_rect(xmin=-1, xmax=1, ymin=-1, ymax=1, size=1, col='darkblue', alpha=0)
 ggsave(filename="./output/image1_setup.png", plot=last_plot(), width = 15, height = 15, units='cm')
+
+
+
+# animating the simulation
+ggplot(pi_data, aes(x, y)) + 
+  geom_rect(xmin=-1, xmax=1, ymin=-1, ymax=1, size=1, col='darkblue', alpha=0) +
+  geom_path(data=circle_data, aes(x,y)) +
+  geom_point(size=0.1, aes(color=factor(in_circle))) + 
+  labs(title = "iter: {frame_time}\n", x = "x-coordinate", y = "y-coordinate", color = "Points\n") +
+  scale_color_manual(labels = c("outside circle", "inside circle"), values = c("red", "blue"))
+ggsave(filename="./output/image2_simulation.png", plot=last_plot(), width = 20, height = 17, units='cm')
+
 
 
 # show simulation results in a visual
